@@ -4,10 +4,10 @@ import SCREENS from "../../../navigation/constants";
 const DashboardCard = () => {
   const navigate = useNavigate()
   return (
-    <div id="cards-carousel" className="h-40 w-64 cursor-pointer" onClick={() => navigate(SCREENS.CARD)}>
-      <div className="">
+    <div id="cards-carousel" className="h-40 sm:w-64 w-96 cursor-pointer" onClick={() => navigate(SCREENS.CARD)}>
+      <div className="w-full">
         <div
-          className="swiper-slide relative flex h-full flex-col overflow-hidden rounded-xl bg-linear-to-br bg-purple-500 from-purple-500 to-indigo-600 p-5 swiper-slide-visible swiper-slide-active"
+          className="swiper-slide relative flex h-full flex-col overflow-hidden rounded-xl bg-linear-to-br bg-purple-500 w-full from-purple-500 to-indigo-600 p-5 swiper-slide-visible swiper-slide-active"
           role="group"
           aria-label="1 / 3"
           style={{

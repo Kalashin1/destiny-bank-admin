@@ -2,7 +2,7 @@ import DashboardCard from "../components/dashboard-card";
 
 const CardDetailForm = () => {
   return (
-    <div className="grid w-12/12">
+    <div className="grid w-12/12 place-items-center">
       <div className="card mt-20 w-full max-w-xl p-4 sm:p-5">
         <DashboardCard />
         <div className="space-y-4 w-full">
