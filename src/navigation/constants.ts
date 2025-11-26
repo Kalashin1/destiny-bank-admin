@@ -1,6 +1,8 @@
 const SCREENS = {
   LOGIN: '/',
-  Dashboard: '/dashboard'
+  DASHBOARD: '/dashboard',
+  PROFILE: '/profile',
+  CARD: '/card'
 }
 
 export default SCREENS;

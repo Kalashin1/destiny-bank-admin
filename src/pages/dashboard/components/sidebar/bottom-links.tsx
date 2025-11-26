@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import SettingSVG from "../svgs/settings";
+import SCREENS from "../../../../navigation/constants";
 
 const BottomLinks = () => {
   return (
@@ -13,10 +15,10 @@ const BottomLinks = () => {
 
       {/* <!-- Profile --> */}
       <div id="profile-wrapper" className="flex">
-        <button id="profile-ref" className="avatar h-12 w-12">
+        <Link to={SCREENS.PROFILE} id="profile-ref" className="avatar h-12 w-12">
           <img className="rounded-full" src="images/100x100.png" alt="avatar" />
           <span className="absolute right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-success dark:border-navy-700"></span>
-        </button>
+        </Link>
        
       </div>
     </div>
