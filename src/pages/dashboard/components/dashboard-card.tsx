@@ -1,10 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import SCREENS from "../../../navigation/constants";
+import { useCurrencyFormatter } from "../../../useFormatter";
+import type { FC } from "react";
 
-const DashboardCard = () => {
+const DashboardCard: FC<{balance: number}> = ({
+  balance
+}) => {
   const navigate = useNavigate()
+  const formatter = useCurrencyFormatter()
   return (
-    <div id="cards-carousel" className="h-40 sm:w-64 w-96 cursor-pointer" onClick={() => navigate(SCREENS.CARD)}>
+    <div id="cards-carousel" className={`h-40 sm:w-64 lg:w-88 w-96 cursor-pointer`} onClick={() => navigate(SCREENS.CARD)}>
       <div className="w-full">
         <div
           className="swiper-slide relative flex h-full flex-col overflow-hidden rounded-xl bg-linear-to-br bg-purple-500 w-full from-purple-500 to-indigo-600 p-5 swiper-slide-visible swiper-slide-active"
@@ -24,7 +29,7 @@ const DashboardCard = () => {
             />
           </div>
           <div className="text-white">
-            <p className="text-lg font-semibold tracking-wide">$2,139.22</p>
+            <p className="text-lg font-semibold tracking-wide">{formatter.format(balance)}</p>
             <p className="text-xs font-medium mt-8">**** **** **** 8945</p>
           </div>
           <div className="absolute right-0 top-0 -m-3 h-24 w-24 rounded-full bg-white/20"></div>

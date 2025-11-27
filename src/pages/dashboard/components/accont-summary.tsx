@@ -1,21 +1,11 @@
-import { useEffect, useState } from "react";
-import { getBalance } from "../../helper";
+import type { FC } from "react";
 import type { Balance } from "../../../types";
 import { useCurrencyFormatter } from "../../../useFormatter";
 
-const AccountSummary = () => {
-  const [balances, setBalance] = useState<Balance|null>(null)
-  useEffect(() => {
-    const set_up = async () => {
-      const data = await getBalance();
-    
-      if (data) {
-        setBalance(data)
-      }
-    }
-
-    set_up()
-  }, [])
+const AccountSummary: FC<{balances: Balance}> = ({
+  balances
+}) => {
+ 
   const formatter = useCurrencyFormatter()
   return (
     <>

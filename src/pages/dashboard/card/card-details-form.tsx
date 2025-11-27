@@ -4,7 +4,7 @@ const CardDetailForm = () => {
   return (
     <div className="grid sm:relative md:-top-16 w-12/12 place-items-center">
       <div className="card mt-20 w-full max-w-xl p-4 sm:p-5">
-        <DashboardCard />
+        <DashboardCard balance={0} />
         <div className="space-y-4 w-full">
           <label className="block">
             <span>Card number</span>
