@@ -40,6 +40,7 @@ const Dashboard = () => {
 
     set_up();
   }, []);
+
   const [showModal, updateShowModal] = useState(false);
 
   const closeModal = () => {
@@ -50,11 +51,12 @@ const Dashboard = () => {
   const showAddBeneficiaryModal = () => {
     updateShowModal(true);
   };
+
   return (
     <Layout>
       <div className="col-span-12 lg:order-last lg:col-span-4">
         {balances && <DashboardCard balance={balances?.balance} />}
-        <SendMoney />
+        <SendMoney beneficiaries={beneficiaries} />
       </div>
       <div className="col-span-12 lg:order-first lg:col-span-8">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 lg:gap-6">
