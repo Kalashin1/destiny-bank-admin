@@ -1,17 +1,58 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router-dom";
 import SCREENS from "../../../../navigation/constants";
+import { useRef, useState, type FormEvent } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../../firebase-settings";
 
 const LoginForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false)
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setHasError(false)
+    const {
+      email: { value: email },
+      password: { value: password },
+    } = formRef.current!;
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      if (user.uid) {
+        console.log("user", user)
+        localStorage.setItem("user_id", user.uid);
+        navigate(SCREENS.DASHBOARD);
+      }
+    } catch (error: any) {
+      if (error.message.includes("invalid-credential"))
+        setHasError(true)
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form className="card mt-5 rounded-lg p-5 lg:p-7">
+    <form
+      className="card mt-5 rounded-lg p-5 lg:p-7"
+      ref={formRef}
+      onSubmit={handleSubmit}
+    >
       <label className="block">
         <span>Username:</span>
         <span className="relative mt-1.5 flex">
           <input
-            className="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-            placeholder="Enter Username"
-            type="text"
+            className={`form-input peer w-full rounded-lg border bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:hover:border-navy-400 dark:focus:border-accent ${
+              hasError
+                ? "border-red-500"
+                : "border-slate-300  dark:border-navy-450"
+            }`}
+            placeholder="Enter Email"
+            type="email"
+            name="email"
           />
           <span className="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
             <svg
@@ -30,14 +71,20 @@ const LoginForm = () => {
             </svg>
           </span>
         </span>
+        {hasError && <small className="text-red-500 ml-1">Invalid email</small>}
       </label>
       <label className="mt-4 block">
         <span>Password:</span>
         <span className="relative mt-1.5 flex">
           <input
-            className="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
+            className={`form-input peer w-full rounded-lg border  bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 focus:z-10 ${
+              hasError
+                ? "border border-red-500"
+                : "border-slate-300 dark:border-navy-450"
+            }`}
             placeholder="Enter Password"
             type="password"
+            name="password"
           />
           <span className="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
             <svg
@@ -56,39 +103,14 @@ const LoginForm = () => {
             </svg>
           </span>
         </span>
+        {hasError && <small className="text-red-500 ml-1">Invalid password</small>}
       </label>
-      <div className="mt-4 flex items-center justify-between space-x-2">
-        <label className="inline-flex items-center space-x-2">
-          <input
-            className="form-checkbox is-basic h-5 w-5 rounded border-slate-400/70 checked:border-primary checked:bg-primary hover:border-primary focus:border-primary dark:border-navy-400 dark:checked:border-accent dark:checked:bg-accent dark:hover:border-accent dark:focus:border-accent"
-            type="checkbox"
-          />
-          <span className="line-clamp-1">Remember me</span>
-        </label>
-        <a
-          href="#"
-          className="text-xs text-slate-400 transition-colors line-clamp-1 hover:text-slate-800 focus:text-slate-800 dark:text-navy-300 dark:hover:text-navy-100 dark:focus:text-navy-100"
-        >
-          Forgot Password?
-        </a>
-      </div>
-      <button onClick={() => navigate(SCREENS.DASHBOARD)} className="btn mt-5 w-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90">
-        Sign In
-      </button>
-      <div className="mt-4 text-center text-xs+">
-        <p className="line-clamp-1">
-          <span>Dont have Account?</span>
 
-          <a
-            className="text-primary transition-colors hover:text-primary-focus dark:text-accent-light dark:hover:text-accent"
-            href="pages-singup-1.html"
-          >
-            Create account
-          </a>
-        </p>
-      </div>    
+      <button className="btn mt-5 w-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90">
+        {isLoading ? <i className="fas fa-spinner fa-spin"></i> : "Sign In"}
+      </button>
     </form>
   );
-}
+};
 
 export default LoginForm;

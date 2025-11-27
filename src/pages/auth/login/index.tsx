@@ -16,11 +16,7 @@ const Login = () => {
           </div>
         </div>
         <LoginForm />
-        <div className="mt-8 flex justify-center text-xs text-slate-400 dark:text-navy-300">
-          <a href="#">Privacy Notice</a>
-          <div className="mx-3 my-1 w-px bg-slate-200 dark:bg-navy-500"></div>
-          <a href="#">Term of service</a>
-        </div>
+       
       </div>
     </main>
   );
