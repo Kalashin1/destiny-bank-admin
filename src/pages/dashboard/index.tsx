@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import type { Balance } from "../../types";
-import { getBalance } from "../helper";
+import { type Balance, type Beneficiary } from "../../types";
+import { getBalance, GetBeneficiaries } from "../helper";
 import AccountSummary from "./components/accont-summary";
 import BeneficiaryTable from "./components/beneficiary-table";
 import DashboardCard from "./components/dashboard-card";
@@ -8,9 +8,27 @@ import SendMoney from "./components/send-money";
 import TransactionCard from "./components/transaction-card";
 // import TransactionTable from "./components/transaction-table";
 import Layout from "./layout";
+import Modal from "./components/modal";
+import AddBeneficiary from "./components/add-beneficiary-modal";
 
 const Dashboard = () => {
   const [balances, setBalance] = useState<Balance | null>(null);
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
+
+  const fetchBeneficiary = async () => {
+    const data = await GetBeneficiaries();
+    setBeneficiaries(data);
+  };
+
+  useEffect(() => {
+    const set_up = async () => {
+      const result = await GetBeneficiaries();
+      setBeneficiaries(result);
+    };
+
+    set_up();
+  }, []);
+
   useEffect(() => {
     const set_up = async () => {
       const data = await getBalance();
@@ -22,6 +40,16 @@ const Dashboard = () => {
 
     set_up();
   }, []);
+  const [showModal, updateShowModal] = useState(false);
+
+  const closeModal = () => {
+    updateShowModal(false);
+    fetchBeneficiary();
+  };
+
+  const showAddBeneficiaryModal = () => {
+    updateShowModal(true);
+  };
   return (
     <Layout>
       <div className="col-span-12 lg:order-last lg:col-span-4">
@@ -32,9 +60,19 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 lg:gap-6">
           {balances && <AccountSummary balances={balances} />}
           <TransactionCard />
-          <BeneficiaryTable />
+          {
+            <BeneficiaryTable
+              showAddBeneficiaryModal={showAddBeneficiaryModal}
+              beneficiaries={beneficiaries}
+            />
+          }
         </div>
       </div>
+      {showModal && (
+        <Modal closeModal={closeModal}>
+          <AddBeneficiary closeModal={closeModal} />
+        </Modal>
+      )}
     </Layout>
   );
 };

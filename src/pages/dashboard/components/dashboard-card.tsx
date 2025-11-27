@@ -9,7 +9,7 @@ const DashboardCard: FC<{balance: number}> = ({
   const navigate = useNavigate()
   const formatter = useCurrencyFormatter()
   return (
-    <div id="cards-carousel" className={`h-40 sm:w-64 lg:w-88 w-96 cursor-pointer`} onClick={() => navigate(SCREENS.CARD)}>
+    <div id="cards-carousel" className={`h-40 sm:w-64 lg:w-60 xl:w-88 w-96 cursor-pointer`} onClick={() => navigate(SCREENS.CARD)}>
       <div className="w-full">
         <div
           className="swiper-slide relative flex h-full flex-col overflow-hidden rounded-xl bg-linear-to-br bg-purple-500 w-full from-purple-500 to-indigo-600 p-5 swiper-slide-visible swiper-slide-active"
