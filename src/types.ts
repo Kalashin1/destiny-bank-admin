@@ -3,11 +3,15 @@ export type Balance = {
   expenses: number;
   income: number;
   savings: number;
+  isLocked: boolean;
 };
+
+export const TRANSACTION_STATUS = ["PENDING", "COMPLETED", "REVERSED", "REJECTED"] as const
 
 export type Transaction = {
   id: string;
   timestamp: number;
+  status: typeof TRANSACTION_STATUS[number]
   amount: number;
   beneficiary: Beneficiary
 };

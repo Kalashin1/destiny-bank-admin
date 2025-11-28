@@ -36,7 +36,7 @@ const AccountSummary: FC<{balances: Balance}> = ({
             />
           </svg>
         </div>
-        <p className="mt-16">Expense</p>
+        <p className="mt-16">Cashback</p>
         <p className="mt-2 font-medium text-slate-700 dark:text-navy-100">
           {balances && (<span className="text-lg">{formatter.format(balances.expenses)}</span>)}
         </p>

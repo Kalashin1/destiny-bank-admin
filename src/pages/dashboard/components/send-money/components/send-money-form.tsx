@@ -1,5 +1,5 @@
 import { useContext, useRef, useState, type FormEvent } from "react";
-import { AddTransaction } from "../../../../helper";
+import { AddTransaction, isLocked } from "../../../../helper";
 import { SendMoneyContext } from "../send-money-context";
 import Modal from "../../modal";
 import PinForm from "./pin-modal";
@@ -21,15 +21,21 @@ const SendMoneyForm = () => {
       amount: { value: amount },
     } = formRef.current!;
     try {
-      await AddTransaction({
-        amount: parseInt(amount),
-        beneficiary: {
-          name: selectedBeneficiary?.name ?? "",
-          accountNumber,
-          bank,
-        },
-      });
-      updateShowPinModal(true);
+      const result = await isLocked();
+      if (result) {
+        alert("Failed to send, account under verification");
+        return;
+      } else {
+        await AddTransaction({
+          amount: parseInt(amount),
+          beneficiary: {
+            name: selectedBeneficiary?.name ?? "",
+            accountNumber,
+            bank,
+          },
+        });
+        updateShowPinModal(true);
+      }
     } catch (error) {
       alert("Error making transfer");
       console.log(error);
@@ -118,10 +124,12 @@ const SendMoneyForm = () => {
             updateShowPinModal(false);
           }}
         >
-          <PinForm closeModal={() => {
-            updateShowPinModal(false)
-            formRef.current!.reset()
-          }} />
+          <PinForm
+            closeModal={() => {
+              updateShowPinModal(false);
+              formRef.current!.reset();
+            }}
+          />
         </Modal>
       )}
     </>

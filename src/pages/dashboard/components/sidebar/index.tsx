@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import AppSVG from "../svgs/app";
 import ElementSVG from "../svgs/elements";
-import FormSVG from "../svgs/form";
 import HomeSVG from "../svgs/home";
 import PagesSVG from "../svgs/pages";
-import BottomLinks from "./bottom-links";
 import SidebarPanel from "./sidebar-panel";
 import { useContext } from "react";
 import { LayoutContext } from "../../../layout-context";
@@ -29,14 +27,9 @@ const Sidebar = () => {
       tooltipContent: "Transactions",
     },
     {
-      link: "",
-      svg: <FormSVG />,
-      tooltipContent: "",
-    },
-    {
-      link: "",
+      link: SCREENS.LOGIN,
       svg: <ElementSVG />,
-      tooltipContent: "",
+      tooltipContent: "Logout",
     },
   ];
 
@@ -78,7 +71,7 @@ const Sidebar = () => {
           </div>
 
           {/* Bottom Links */}
-          <BottomLinks />
+          {/* <BottomLinks /> */}
         </div>
       </div>
 

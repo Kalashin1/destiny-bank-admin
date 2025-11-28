@@ -6,8 +6,12 @@ import {
   getDocs,
   limit,
   orderBy,
+  Query,
   query,
+  QueryDocumentSnapshot,
+  startAfter,
   updateDoc,
+  type DocumentData,
 } from "firebase/firestore";
 import { db } from "../firebase-settings";
 import type { Balance, Beneficiary, Transaction } from "../types";
@@ -25,22 +29,57 @@ export const getBalance = async () => {
 export const updateBalance = async ({
   balance,
   income,
-  savings
-}: Pick<Balance, 'balance' | 'income' | 'savings'>) => {
+  savings,
+  expenses
+}: Pick<Balance, 'balance' | 'income' | 'savings' | "expenses">) => {
   const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
   await updateDoc(docRef, {
     balance,
     income,
     savings,
+    expenses
   });
 }
 
-export const GetTransactions = async () => {
-  const q = query(
-    collection(db, "transactions"),
-    orderBy("timestamp", "desc"), // or 'asc' for ascending
-    limit(5)
-  );
+export const lockAccount = async () => {
+  const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
+  await updateDoc(docRef, {
+    isLocked: true
+  });
+}
+
+export const unLockAccount = async () => {
+  const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
+  await updateDoc(docRef, {
+    isLocked: false
+  })
+}
+
+export const isLocked = async () => {
+  const data = await getBalance()
+  if (data) {
+    return data.isLocked
+  } else return false
+}
+
+export const GetTransactions = async (
+  dataLimit = 5,
+  lastVisibleDoc: QueryDocumentSnapshot<Transaction> | null = null
+) => {
+  let q: Query<DocumentData, DocumentData>;
+  if (lastVisibleDoc) {
+    q = query(
+      collection(db, "transactions"),
+      orderBy("timestamp", "desc"),
+      startAfter(lastVisibleDoc),
+      limit(dataLimit)
+    );
+  } else
+    q = query(
+      collection(db, "transactions"),
+      orderBy("timestamp", "desc"), // or 'asc' for ascending
+      limit(dataLimit)
+    );
 
   const docRefs = await getDocs(q);
   const transactions: Transaction[] = [];
@@ -52,6 +91,25 @@ export const GetTransactions = async () => {
     }
   });
   return transactions;
+};
+
+export const GetTransactionsWithPagination = async (
+  dataLimit = 5,
+  lastVisible: QueryDocumentSnapshot<Transaction> | null = null
+) => {
+  const transactions = await GetTransactions(dataLimit, lastVisible);
+  const querySnapshot = await getDocs(
+    query(
+      collection(db, "transactions"),
+      orderBy("timestamp", "desc"),
+      limit(1)
+    )
+  );
+
+  return {
+    transactions,
+    lastVisible: querySnapshot.docs[querySnapshot.docs.length - 1] || null,
+  };
 };
 
 export const AddTransaction = async ({

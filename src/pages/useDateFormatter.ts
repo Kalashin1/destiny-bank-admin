@@ -13,7 +13,20 @@ function useDateFormatter() {
     });
   }, []);
 
-  const formatTimestamp = (timestamp: number) => {
+  const shortFormatter = useMemo(() => {
+    return new Intl.DateTimeFormat("en-US", {
+      day: "2-digit",
+      month: "short",
+    });
+  }, []);
+
+  const formatTimestamp = (
+    timestamp: number,
+    format: "default" | "short" = "default"
+  ) => {
+    if (format === "short") {
+      return shortFormatter.format(new Date(timestamp));
+    }
     return formatter.format(new Date(timestamp));
   };
 

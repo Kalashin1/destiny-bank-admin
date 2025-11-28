@@ -13,6 +13,10 @@ const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: SCREENS.LOGIN,
+    element: <Login />
+  },
+  {
     path: SCREENS.DASHBOARD,
     element: <Dashboard />
   },
