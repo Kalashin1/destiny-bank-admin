@@ -8,8 +8,10 @@ import { useContext } from "react";
 import { LayoutContext } from "../../../layout-context";
 import SCREENS from "../../../../navigation/constants";
 import { Tooltip } from "react-tooltip";
+import { auth } from "../../../../firebase-settings";
 
 const Sidebar = () => {
+  const currentUser = auth.currentUser
   const sidebarSVGS = [
     {
       link: SCREENS.DASHBOARD,
@@ -54,20 +56,24 @@ const Sidebar = () => {
           {/* Main section Links */}
           <div className="is-scrollbar-hidden flex grow flex-col space-y-4 overflow-y-auto pt-6">
             {/* <!-- Dashobards --> */}
-            {sidebarSVGS.map((link, index) => (
-              <>
-                <Link
-                  to={link.link}
-                  key={index}
-                  data-tooltip-id={`${index}`}
-                  data-tooltip-content={`${link.tooltipContent}`}
-                  className="tooltip-main-sidebar flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary outline-none transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-navy-600 dark:text-accent-light dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
-                >
-                  {link.svg}
-                </Link>
-                <Tooltip id={`${index}`} />
-              </>
-            ))}
+            {sidebarSVGS.map((link, index) => {
+              if (link.link === SCREENS.ADD_BALANCE && !(currentUser?.email?.includes('@admin'))) {
+                return;
+              } else return (
+                <>
+                  <Link
+                    to={link.link}
+                    key={index}
+                    data-tooltip-id={`${index}`}
+                    data-tooltip-content={`${link.tooltipContent}`}
+                    className="tooltip-main-sidebar flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary outline-none transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-navy-600 dark:text-accent-light dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
+                  >
+                    {link.svg}
+                  </Link>
+                  <Tooltip id={`${index}`} />
+                </>
+              );
+            })}
           </div>
 
           {/* Bottom Links */}
