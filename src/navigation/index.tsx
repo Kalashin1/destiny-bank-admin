@@ -4,6 +4,8 @@ import SCREENS from "./constants";
 import Dashboard from "../pages/dashboard";
 import Profile from "../pages/dashboard/profile";
 import Card from "../pages/dashboard/card";
+import FundPage from "../pages/dashboard/fund";
+import TransactionPage from "../pages/dashboard/transaction";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +23,14 @@ const router = createBrowserRouter([
   {
     path: SCREENS.CARD,
     element: <Card />
+  },
+  {
+    path: SCREENS.ADD_BALANCE,
+    element: <FundPage />
+  },
+  {
+    path: SCREENS.TRANSACTIONS,
+    element: <TransactionPage />
   },
 ])
 

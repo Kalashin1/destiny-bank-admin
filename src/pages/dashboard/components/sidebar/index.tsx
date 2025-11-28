@@ -9,34 +9,38 @@ import SidebarPanel from "./sidebar-panel";
 import { useContext } from "react";
 import { LayoutContext } from "../../../layout-context";
 import SCREENS from "../../../../navigation/constants";
+import { Tooltip } from "react-tooltip";
 
 const Sidebar = () => {
   const sidebarSVGS = [
     {
       link: SCREENS.DASHBOARD,
       svg: <HomeSVG />,
+      tooltipContent: "Dashboard",
     },
     {
-      link: "",
+      link: SCREENS.ADD_BALANCE,
       svg: <AppSVG />,
+      tooltipContent: "Add Balance",
     },
     {
-      link: "",
+      link: SCREENS.TRANSACTIONS,
       svg: <PagesSVG />,
+      tooltipContent: "Transactions",
     },
     {
       link: "",
       svg: <FormSVG />,
+      tooltipContent: "",
     },
     {
       link: "",
       svg: <ElementSVG />,
+      tooltipContent: "",
     },
   ];
 
-  const {
-    showSidePanel
-  } = useContext(LayoutContext)
+  const { showSidePanel } = useContext(LayoutContext);
 
   return (
     <div className="print:hidden">
@@ -58,13 +62,18 @@ const Sidebar = () => {
           <div className="is-scrollbar-hidden flex grow flex-col space-y-4 overflow-y-auto pt-6">
             {/* <!-- Dashobards --> */}
             {sidebarSVGS.map((link, index) => (
-              <Link
-                to={link.link}
-                key={index}
-                className="tooltip-main-sidebar flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary outline-none transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-navy-600 dark:text-accent-light dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
-              >
-                {link.svg}
-              </Link>
+              <>
+                <Link
+                  to={link.link}
+                  key={index}
+                  data-tooltip-id={`${index}`}
+                  data-tooltip-content={`${link.tooltipContent}`}
+                  className="tooltip-main-sidebar flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary outline-none transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:bg-navy-600 dark:text-accent-light dark:hover:bg-navy-450 dark:focus:bg-navy-450 dark:active:bg-navy-450/90"
+                >
+                  {link.svg}
+                </Link>
+                <Tooltip id={`${index}`} />
+              </>
             ))}
           </div>
 
@@ -74,7 +83,7 @@ const Sidebar = () => {
       </div>
 
       {/* Sidebar Panel */}
-      {showSidePanel && (<SidebarPanel />)}
+      {showSidePanel && window.window.innerWidth < 500 && <SidebarPanel />}
     </div>
   );
 };

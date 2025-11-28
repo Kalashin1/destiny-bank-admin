@@ -13,6 +13,7 @@ const PinForm: FC<{closeModal: (...args: unknown[]) => void}> = ({
     if (parseInt(pin) === 1234) {
       alert("Transfer in progress")
       closeModal()
+      location.reload()
     }
     else alert("incorrect pin")
   }

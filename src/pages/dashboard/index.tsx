@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { type Balance, type Beneficiary } from "../../types";
-import { getBalance, GetBeneficiaries } from "../helper";
+import { type Balance, type Beneficiary, type Transaction } from "../../types";
+import { getBalance, GetBeneficiaries, GetTransactions } from "../helper";
 import AccountSummary from "./components/accont-summary";
 import BeneficiaryTable from "./components/beneficiary-table";
 import DashboardCard from "./components/dashboard-card";
@@ -14,10 +14,16 @@ import AddBeneficiary from "./components/add-beneficiary-modal";
 const Dashboard = () => {
   const [balances, setBalance] = useState<Balance | null>(null);
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const fetchBeneficiary = async () => {
     const data = await GetBeneficiaries();
     setBeneficiaries(data);
+  };
+
+  const fetchTransactions = async () => {
+    const data = await GetTransactions();
+    setTransactions(data);
   };
 
   useEffect(() => {
@@ -41,11 +47,21 @@ const Dashboard = () => {
     set_up();
   }, []);
 
+  useEffect(() => {
+    const set_up = async () => {
+      const data = await GetTransactions();
+      setTransactions(data);
+    };
+
+    set_up();
+  }, []);
+
   const [showModal, updateShowModal] = useState(false);
 
   const closeModal = () => {
     updateShowModal(false);
     fetchBeneficiary();
+    fetchTransactions()
   };
 
   const showAddBeneficiaryModal = () => {
@@ -61,7 +77,7 @@ const Dashboard = () => {
       <div className="col-span-12 lg:order-first lg:col-span-8">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 lg:gap-6">
           {balances && <AccountSummary balances={balances} />}
-          <TransactionCard />
+          <TransactionCard transactions={transactions} />
           {
             <BeneficiaryTable
               showAddBeneficiaryModal={showAddBeneficiaryModal}

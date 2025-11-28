@@ -1,10 +1,12 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import NotificationButton from "./notification-button";
 import ProfileButton from "./profile-button";
 import { LayoutContext } from "../../layout-context";
+import NotificationDropdown from "./notification";
 
 const AppWrapper = () => {
   const {setShowSidePanel, showSidePanel} = useContext(LayoutContext)  
+  const [showNotification, updateShowNotification] = useState(false)
 
   const toggleSidePanel = () => {
     if (setShowSidePanel)
@@ -16,10 +18,13 @@ const AppWrapper = () => {
       {/* <!-- App Header  --> */}
       <div className="header-container relative flex w-full bg-white dark:bg-navy-700 print:hidden">
         {/* <!-- Header Items --> */}
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full items-center justify-between relative">
           {/* <!-- Left: Sidebar Toggle Button --> */}
           <div className="h-7 w-7">
-            <button onClick={toggleSidePanel} className="sidebar-toggle ml-0.5 flex h-7 w-7 flex-col justify-center space-y-1.5 text-primary outline-none focus:outline-none dark:text-accent-light/80">
+            <button
+              onClick={toggleSidePanel}
+              className="sidebar-toggle ml-0.5 flex h-7 w-7 flex-col justify-center space-y-1.5 text-primary outline-none focus:outline-none dark:text-accent-light/80"
+            >
               <span></span>
               <span></span>
               <span></span>
@@ -28,9 +33,11 @@ const AppWrapper = () => {
 
           {/* <!-- Right: Header buttons --> */}
           <div className="-mr-1.5 flex items-center space-x-2">
-            <NotificationButton />
+            <NotificationButton showNotification={() => updateShowNotification(true)}  />
             <ProfileButton />
           </div>
+
+          {showNotification && (<NotificationDropdown hideDropdown={() => updateShowNotification(false)} />)}
         </div>
       </div>
     </nav>

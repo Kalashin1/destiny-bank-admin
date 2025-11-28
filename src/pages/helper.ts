@@ -7,6 +7,7 @@ import {
   limit,
   orderBy,
   query,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase-settings";
 import type { Balance, Beneficiary, Transaction } from "../types";
@@ -21,11 +22,24 @@ export const getBalance = async () => {
   }
 };
 
+export const updateBalance = async ({
+  balance,
+  income,
+  savings
+}: Pick<Balance, 'balance' | 'income' | 'savings'>) => {
+  const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
+  await updateDoc(docRef, {
+    balance,
+    income,
+    savings,
+  });
+}
+
 export const GetTransactions = async () => {
   const q = query(
     collection(db, "transactions"),
     orderBy("timestamp", "desc"), // or 'asc' for ascending
-    limit(10)
+    limit(5)
   );
 
   const docRefs = await getDocs(q);
