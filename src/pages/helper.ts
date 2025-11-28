@@ -9,12 +9,13 @@ import {
   Query,
   query,
   QueryDocumentSnapshot,
+  setDoc,
   startAfter,
   updateDoc,
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "../firebase-settings";
-import type { Balance, Beneficiary, Transaction } from "../types";
+import type { Balance, Beneficiary, Transaction, User } from "../types";
 
 export const getBalance = async () => {
   const docRef = await getDoc(doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM"));
@@ -30,37 +31,67 @@ export const updateBalance = async ({
   balance,
   income,
   savings,
-  expenses
-}: Pick<Balance, 'balance' | 'income' | 'savings' | "expenses">) => {
+  expenses,
+}: Pick<Balance, "balance" | "income" | "savings" | "expenses">) => {
   const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
   await updateDoc(docRef, {
     balance,
     income,
     savings,
-    expenses
+    expenses,
   });
-}
+};
 
 export const lockAccount = async () => {
   const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
   await updateDoc(docRef, {
-    isLocked: true
+    isLocked: true,
   });
+};
+
+export const getUserById = async (user_id: string) => {
+  const ref = doc(db, "users", user_id);
+  const docRef = await getDoc(ref);
+  if (docRef.exists()) {
+    const user = docRef.data() as User;
+    user.id = docRef.id;
+    return user;
+  } else {
+    return null;
+  }
+};
+
+export const createUser = async (
+  user_id: string,
+  userParam: Partial<User>
+) => {
+  await setDoc(doc(db, "users", user_id), {
+    ...userParam,
+  });
+};
+
+export const updateUser = async (
+  user_id: string,
+  userParam: Partial<User>
+) => {
+  await updateDoc(doc(db, "users", user_id), {
+    ...userParam
+  })
 }
 
 export const unLockAccount = async () => {
   const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
   await updateDoc(docRef, {
-    isLocked: false
-  })
-}
+    isLocked: false,
+  });
+};
 
 export const isLocked = async () => {
-  const data = await getBalance()
+  const data = await getBalance();
   if (data) {
-    return data.isLocked
-  } else return false
-}
+    return data.isLocked;
+  } else return false;
+};
 
 export const GetTransactions = async (
   dataLimit = 5,

@@ -9,6 +9,7 @@ import { LayoutContext } from "../../../layout-context";
 import SCREENS from "../../../../navigation/constants";
 import { Tooltip } from "react-tooltip";
 import { auth } from "../../../../firebase-settings";
+import BottomLinks from "./bottom-links";
 
 const Sidebar = () => {
   const currentUser = auth.currentUser
@@ -77,7 +78,7 @@ const Sidebar = () => {
           </div>
 
           {/* Bottom Links */}
-          {/* <BottomLinks /> */}
+          <BottomLinks />
         </div>
       </div>
 

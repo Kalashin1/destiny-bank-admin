@@ -6,6 +6,16 @@ export type Balance = {
   isLocked: boolean;
 };
 
+export type User = {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  currency: string;
+  province: string;
+}
+
 export const TRANSACTION_STATUS = ["PENDING", "COMPLETED", "REVERSED", "REJECTED"] as const
 
 export type Transaction = {

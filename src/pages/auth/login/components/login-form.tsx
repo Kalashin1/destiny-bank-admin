@@ -4,18 +4,19 @@ import SCREENS from "../../../../navigation/constants";
 import { useRef, useState, type FormEvent } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../../firebase-settings";
+import { createUser, getUserById } from "../../../helper";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false)
+  const [hasError, setHasError] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setHasError(false)
+    setHasError(false);
     const {
       email: { value: email },
       password: { value: password },
@@ -23,13 +24,18 @@ const LoginForm = () => {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       if (user.uid) {
-        console.log("user", user)
+        console.log("user", user);
         localStorage.setItem("user_id", user.uid);
+        
+        const existingUser = await getUserById(user.uid);
+
+        if (!existingUser) {
+          await createUser(user.uid, { email: user.email! });
+        }
         navigate(SCREENS.DASHBOARD);
       }
     } catch (error: any) {
-      if (error.message.includes("invalid-credential"))
-        setHasError(true)
+      if (error.message.includes("invalid-credential")) setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +109,9 @@ const LoginForm = () => {
             </svg>
           </span>
         </span>
-        {hasError && <small className="text-red-500 ml-1">Invalid password</small>}
+        {hasError && (
+          <small className="text-red-500 ml-1">Invalid password</small>
+        )}
       </label>
 
       <button className="btn mt-5 w-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90">

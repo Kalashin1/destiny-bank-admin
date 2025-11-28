@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
-import SettingSVG from "../svgs/settings";
+// import SettingSVG from "../svgs/settings";
 import SCREENS from "../../../../navigation/constants";
 
 const BottomLinks = () => {
   return (
     <div className="flex flex-col items-center space-y-3 py-3">
       {/* <!-- Settings --> */}
-      <a
+      {/* <a
         href="forms-layout-5.html"
         className="flex h-11 w-11 items-center justify-center rounded-lg outline-none transition-colors duration-200 hover:bg-primary/20 focus:bg-primary/20 active:bg-primary/25 dark:hover:bg-navy-300/20 dark:focus:bg-navy-300/20 dark:active:bg-navy-300/25"
       >
         <SettingSVG />  
-      </a>
+      </a> */}
 
       {/* <!-- Profile --> */}
       <div id="profile-wrapper" className="flex">
