@@ -1,5 +1,5 @@
 import { useContext, useRef, useState, type FormEvent } from "react";
-import { AddTransaction, isLocked } from "../../../../helper";
+import { AddTransaction, getBalance, isLocked } from "../../../../helper";
 import { SendMoneyContext } from "../send-money-context";
 import Modal from "../../modal";
 import PinForm from "./pin-modal";
@@ -26,15 +26,21 @@ const SendMoneyForm = () => {
         alert("Failed to send, account under verification");
         return;
       } else {
-        await AddTransaction({
-          amount: parseInt(amount),
-          beneficiary: {
-            name: selectedBeneficiary?.name ?? "",
-            accountNumber,
-            bank,
-          },
-        });
-        updateShowPinModal(true);
+        const balances = await getBalance();
+        if (balances!.balance < amount) {
+          alert("Insufficient funds");
+          return;
+        } else {
+          await AddTransaction({
+            amount: parseInt(amount),
+            beneficiary: {
+              name: selectedBeneficiary?.name ?? "",
+              accountNumber,
+              bank,
+            },
+          });
+          updateShowPinModal(true);
+        }
       }
     } catch (error) {
       alert("Error making transfer");
