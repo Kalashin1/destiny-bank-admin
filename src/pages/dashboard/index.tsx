@@ -6,15 +6,19 @@ import BeneficiaryTable from "./components/beneficiary-table";
 import DashboardCard from "./components/dashboard-card";
 import SendMoney from "./components/send-money";
 import TransactionCard from "./components/transaction-card";
-// import TransactionTable from "./components/transaction-table";
 import Layout from "./layout";
 import Modal from "./components/modal";
 import AddBeneficiary from "./components/add-beneficiary-modal";
+import { auth } from "../../firebase-settings";
+import { useNavigate } from "react-router-dom";
+import SCREENS from "../../navigation/constants";
 
 const Dashboard = () => {
   const [balances, setBalance] = useState<Balance | null>(null);
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  const currentUser = auth.currentUser
 
   const fetchBeneficiary = async () => {
     const data = await GetBeneficiaries();
@@ -25,18 +29,22 @@ const Dashboard = () => {
     const data = await GetTransactions();
     setTransactions(data);
   };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const set_up = async () => {
+      if (!currentUser) navigate(SCREENS.LOGIN);
       const result = await GetBeneficiaries();
       setBeneficiaries(result);
     };
 
     set_up();
-  }, []);
+  }, [currentUser, navigate]);
+
 
   useEffect(() => {
     const set_up = async () => {
+      if (!currentUser) navigate(SCREENS.LOGIN)
       const data = await getBalance();
 
       if (data) {
@@ -45,16 +53,17 @@ const Dashboard = () => {
     };
 
     set_up();
-  }, []);
+  }, [currentUser, navigate]);
 
   useEffect(() => {
     const set_up = async () => {
+      if (!currentUser) navigate(SCREENS.LOGIN);
       const data = await GetTransactions();
       setTransactions(data);
     };
 
     set_up();
-  }, []);
+  }, [currentUser, navigate]);
 
   const [showModal, updateShowModal] = useState(false);
 
