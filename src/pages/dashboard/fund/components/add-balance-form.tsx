@@ -1,13 +1,29 @@
-import { useRef, useState, type FormEvent } from "react";
-import { updateBalance } from "../../../helper";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { getUsers, updateBalance } from "../../../helper";
 import { useNavigate } from "react-router-dom";
 import SCREENS from "../../../../navigation/constants";
+import { auth } from "../../../../firebase-settings";
+import Select from "react-select";
+import type { User } from "../../../../types";
 
 const AddBalanceForm = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState<User[]>([])
+  const [selectedUser, setSelectedUsers] = useState('')
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    const set_up = async () => {
+      const _users = await getUsers()
+      if (_users) setUsers(_users)
+    }
+
+    set_up()
+  }, [])
+
+  const currentUser = auth.currentUser;
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -17,16 +33,21 @@ const AddBalanceForm = () => {
         balance: { value: balance },
         income: { value: income },
         savings: { value: savings },
-        cashback: {value: cashback }
+        cashback: { value: cashback },
       } = formRef.current!;
-      await updateBalance({
-        balance: parseInt(balance),
-        income: parseInt(income),
-        savings: parseInt(savings),
-        expenses: parseInt(cashback),
-      });
-      alert("Balance update successfully");
-      navigate(SCREENS.DASHBOARD);
+      if (currentUser) {
+        await updateBalance(
+          {
+            balance: parseInt(balance),
+            income: parseInt(income),
+            savings: parseInt(savings),
+            expenses: parseInt(cashback),
+          },
+          selectedUser
+        );
+        alert("Balance update successfully");
+        navigate(SCREENS.DASHBOARD);
+      } else navigate(SCREENS.LOGIN);
     } catch (error) {
       console.log(error);
       alert("error adding balance");
@@ -85,6 +106,15 @@ const AddBalanceForm = () => {
             name="savings"
           />
         </label>
+      </div>
+      <div className="mt-2 space-y-4">
+        <label className="block">
+          <span className="text-xs+">Savings</span>
+          <Select options={users.map((user) => (
+            {label: user.fullName, value: user.id}
+          ))} onChange={(v) => setSelectedUsers(v!.value)} />
+        </label>
+
       </div>
       <div className="mt-2 space-y-4">
         <button className="btn mt-5 h-10 w-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90">

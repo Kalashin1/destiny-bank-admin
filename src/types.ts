@@ -20,6 +20,7 @@ export const TRANSACTION_STATUS = ["PENDING", "COMPLETED", "REVERSED", "REJECTED
 
 export type Transaction = {
   id: string;
+  user_id: string;
   timestamp: number;
   status: typeof TRANSACTION_STATUS[number]
   amount: number;

@@ -4,7 +4,7 @@ import SCREENS from "../../../../navigation/constants";
 import { useRef, useState, type FormEvent } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../../firebase-settings";
-import { createUser, getUserById } from "../../../helper";
+import { createBalance, createUser, getUserById } from "../../../helper";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -31,6 +31,7 @@ const LoginForm = () => {
 
         if (!existingUser) {
           await createUser(user.uid, { email: user.email! });
+          await createBalance(user.uid)
         }
         navigate(SCREENS.DASHBOARD);
       }

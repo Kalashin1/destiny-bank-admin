@@ -18,7 +18,7 @@ const Dashboard = () => {
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  const currentUser = auth.currentUser
+  const currentUser = auth.currentUser;
 
   const fetchBeneficiary = async () => {
     const data = await GetBeneficiaries();
@@ -26,8 +26,11 @@ const Dashboard = () => {
   };
 
   const fetchTransactions = async () => {
-    const data = await GetTransactions();
-    setTransactions(data);
+    if (!currentUser) navigate(SCREENS.DASHBOARD);
+    else {
+      const data = await GetTransactions(currentUser.uid);
+      setTransactions(data);
+    }
   };
   const navigate = useNavigate();
 
@@ -41,14 +44,15 @@ const Dashboard = () => {
     set_up();
   }, [currentUser, navigate]);
 
-
   useEffect(() => {
     const set_up = async () => {
-      if (!currentUser) navigate(SCREENS.LOGIN)
-      const data = await getBalance();
+      if (!currentUser) navigate(SCREENS.LOGIN);
+      else {
+        const data = await getBalance(currentUser.uid!);
 
-      if (data) {
-        setBalance(data);
+        if (data) {
+          setBalance(data);
+        }
       }
     };
 
@@ -58,8 +62,10 @@ const Dashboard = () => {
   useEffect(() => {
     const set_up = async () => {
       if (!currentUser) navigate(SCREENS.LOGIN);
-      const data = await GetTransactions();
-      setTransactions(data);
+      else {
+        const data = await GetTransactions(currentUser.uid);
+        setTransactions(data);
+      }
     };
 
     set_up();
@@ -70,7 +76,7 @@ const Dashboard = () => {
   const closeModal = () => {
     updateShowModal(false);
     fetchBeneficiary();
-    fetchTransactions()
+    fetchTransactions();
   };
 
   const showAddBeneficiaryModal = () => {

@@ -3,6 +3,9 @@ import { AddTransaction, getBalance, isLocked } from "../../../../helper";
 import { SendMoneyContext } from "../send-money-context";
 import Modal from "../../modal";
 import PinForm from "./pin-modal";
+import { auth } from "../../../../../firebase-settings";
+import { useNavigate } from "react-router-dom";
+import SCREENS from "../../../../../navigation/constants";
 
 const SendMoneyForm = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -12,41 +15,47 @@ const SendMoneyForm = () => {
 
   const { selectedBeneficiary } = useContext(SendMoneyContext);
 
+  const currentUser = auth.currentUser;
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    const {
-      accountNumber: { value: accountNumber },
-      bank: { value: bank },
-      amount: { value: amount },
-    } = formRef.current!;
-    try {
-      const result = await isLocked();
-      if (result) {
-        alert("Failed to send, account under verification");
-        return;
-      } else {
-        const balances = await getBalance();
-        if (balances!.balance < amount) {
-          alert("Insufficient funds");
+    if (!currentUser) navigate(SCREENS.LOGIN);
+    else {
+      e.preventDefault();
+      setIsLoading(true);
+      const {
+        accountNumber: { value: accountNumber },
+        bank: { value: bank },
+        amount: { value: amount },
+      } = formRef.current!;
+      try {
+        const result = await isLocked(currentUser.uid);
+        if (result) {
+          alert("Failed to send, account under verification");
           return;
         } else {
-          await AddTransaction({
-            amount: parseInt(amount),
-            beneficiary: {
-              name: selectedBeneficiary?.name ?? "",
-              accountNumber,
-              bank,
-            },
-          });
-          updateShowPinModal(true);
+          const balances = await getBalance(currentUser.uid);
+          if (balances!.balance < amount) {
+            alert("Insufficient funds");
+            return;
+          } else {
+            await AddTransaction({
+              amount: parseInt(amount),
+              beneficiary: {
+                name: selectedBeneficiary?.name ?? "",
+                accountNumber,
+                bank,
+              },
+            }, currentUser.uid);
+            updateShowPinModal(true);
+          }
         }
+      } catch (error) {
+        alert("Error making transfer");
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      alert("Error making transfer");
-      console.log(error);
-    } finally {
-      setIsLoading(false);
     }
   };
   return (

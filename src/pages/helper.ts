@@ -12,13 +12,30 @@ import {
   setDoc,
   startAfter,
   updateDoc,
+  where,
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "../firebase-settings";
 import type { Balance, Beneficiary, Transaction, User } from "../types";
 
-export const getBalance = async () => {
-  const docRef = await getDoc(doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM"));
+export const getUsers = async () => {
+  const q = query(
+    collection(db, "users"), // or 'asc' for ascending
+  );
+  const docRefs = await getDocs(q);
+  const users:User[] = []
+  docRefs.docs.map((doc) => {
+    if (doc.exists()) {
+      const user = doc.data() as User;
+      user.id = doc.id;
+      users.push(user);
+    }
+  });
+  return users;
+}
+
+export const getBalance = async (user_id: string) => {
+  const docRef = await getDoc(doc(db, "balance", user_id));
   if (docRef.exists()) {
     const data = docRef.data() as Balance;
     return data;
@@ -27,13 +44,25 @@ export const getBalance = async () => {
   }
 };
 
-export const updateBalance = async ({
-  balance,
-  income,
-  savings,
-  expenses,
-}: Pick<Balance, "balance" | "income" | "savings" | "expenses">) => {
-  const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
+export const createBalance = async (user_id: string) => {
+  await setDoc(doc(db, "balance", user_id), {
+    balance: 0,
+    income: 0,
+    savings: 0,
+    expenses: 0,
+  });
+};
+
+export const updateBalance = async (
+  {
+    balance,
+    income,
+    savings,
+    expenses,
+  }: Pick<Balance, "balance" | "income" | "savings" | "expenses">,
+  user_id: string
+) => {
+  const docRef = doc(db, "balance", user_id);
   await updateDoc(docRef, {
     balance,
     income,
@@ -42,8 +71,8 @@ export const updateBalance = async ({
   });
 };
 
-export const lockAccount = async () => {
-  const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
+export const lockAccount = async (user_id: string) => {
+  const docRef = doc(db, "balance", user_id);
   await updateDoc(docRef, {
     isLocked: true,
   });
@@ -61,23 +90,17 @@ export const getUserById = async (user_id: string) => {
   }
 };
 
-export const createUser = async (
-  user_id: string,
-  userParam: Partial<User>
-) => {
+export const createUser = async (user_id: string, userParam: Partial<User>) => {
   await setDoc(doc(db, "users", user_id), {
     ...userParam,
   });
 };
 
-export const updateUser = async (
-  user_id: string,
-  userParam: Partial<User>
-) => {
+export const updateUser = async (user_id: string, userParam: Partial<User>) => {
   await updateDoc(doc(db, "users", user_id), {
-    ...userParam
-  })
-}
+    ...userParam,
+  });
+};
 
 export const unLockAccount = async () => {
   const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
@@ -86,14 +109,15 @@ export const unLockAccount = async () => {
   });
 };
 
-export const isLocked = async () => {
-  const data = await getBalance();
+export const isLocked = async (user_id: string) => {
+  const data = await getBalance(user_id);
   if (data) {
     return data.isLocked;
   } else return false;
 };
 
 export const GetTransactions = async (
+  user_id: string,
   dataLimit = 5,
   lastVisibleDoc: QueryDocumentSnapshot<Transaction> | null = null
 ) => {
@@ -101,6 +125,7 @@ export const GetTransactions = async (
   if (lastVisibleDoc) {
     q = query(
       collection(db, "transactions"),
+      where("user_id", "==", user_id),
       orderBy("timestamp", "desc"),
       startAfter(lastVisibleDoc),
       limit(dataLimit)
@@ -108,6 +133,7 @@ export const GetTransactions = async (
   } else
     q = query(
       collection(db, "transactions"),
+      where("user_id", "==", user_id),
       orderBy("timestamp", "desc"), // or 'asc' for ascending
       limit(dataLimit)
     );
@@ -125,13 +151,15 @@ export const GetTransactions = async (
 };
 
 export const GetTransactionsWithPagination = async (
+  user_id: string,
   dataLimit = 5,
   lastVisible: QueryDocumentSnapshot<Transaction> | null = null
 ) => {
-  const transactions = await GetTransactions(dataLimit, lastVisible);
+  const transactions = await GetTransactions(user_id, dataLimit, lastVisible);
   const querySnapshot = await getDocs(
     query(
       collection(db, "transactions"),
+      where("user_id", "==", user_id),
       orderBy("timestamp", "desc"),
       limit(1)
     )
@@ -146,11 +174,12 @@ export const GetTransactionsWithPagination = async (
 export const AddTransaction = async ({
   amount,
   beneficiary,
-}: Partial<Transaction>) => {
+}: Partial<Transaction>, user_id: string) => {
   const docRef = await addDoc(collection(db, "transactions"), {
     timestamp: new Date().getTime(),
     amount,
     beneficiary,
+    user_id,
   });
   return docRef.id;
 };
