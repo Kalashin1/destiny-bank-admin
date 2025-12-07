@@ -45,6 +45,7 @@ const SendMoneyForm = () => {
                 name: selectedBeneficiary?.name ?? "",
                 accountNumber,
                 bank,
+                user_id: currentUser.uid
               },
             }, currentUser.uid);
             updateShowPinModal(true);

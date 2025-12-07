@@ -185,13 +185,14 @@ export const AddTransaction = async ({
 };
 
 export const AddBeneficiary = async (beneficiary: Beneficiary) => {
-  const docRef = await addDoc(collection(db, "beneficiaries"), beneficiary);
+  const docRef = await addDoc(collection(db, "beneficiaries"), {...beneficiary});
   return docRef.id;
 };
 
-export const GetBeneficiaries = async () => {
+export const GetBeneficiaries = async (user_id: string) => {
   const q = query(
     collection(db, "beneficiaries"),
+    where("user_id", "==", user_id),
     orderBy("name", "desc"), // or 'asc' for ascending
     limit(10)
   );

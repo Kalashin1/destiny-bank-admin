@@ -17,10 +17,10 @@ const SidebarPanelBody = () => {
       text: "Transactions",
       link: SCREENS.TRANSACTIONS,
     },
-    {
-      text: "Card",
-      link: SCREENS.CARD,
-    },
+    // {
+    //   text: "Card",
+    //   link: SCREENS.CARD,
+    // },
     {
       text: "Profile",
       link: SCREENS.PROFILE,

@@ -21,8 +21,10 @@ const Dashboard = () => {
   const currentUser = auth.currentUser;
 
   const fetchBeneficiary = async () => {
-    const data = await GetBeneficiaries();
-    setBeneficiaries(data);
+    if (currentUser) {
+      const data = await GetBeneficiaries(currentUser.uid);
+      setBeneficiaries(data);
+    }
   };
 
   const fetchTransactions = async () => {
@@ -37,8 +39,10 @@ const Dashboard = () => {
   useEffect(() => {
     const set_up = async () => {
       if (!currentUser) navigate(SCREENS.LOGIN);
-      const result = await GetBeneficiaries();
-      setBeneficiaries(result);
+      else {
+        const result = await GetBeneficiaries(currentUser.uid);
+        setBeneficiaries(result);
+      }
     };
 
     set_up();

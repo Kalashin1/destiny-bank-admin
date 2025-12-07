@@ -31,4 +31,5 @@ export type Beneficiary = {
   name: string;
   accountNumber: string;
   bank: string;
+  user_id: string
 };

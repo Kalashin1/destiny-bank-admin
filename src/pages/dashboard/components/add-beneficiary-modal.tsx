@@ -1,30 +1,43 @@
 import { useRef, useState, type FC, type FormEvent } from "react";
 import { AddBeneficiary } from "../../helper";
+import { auth } from "../../../firebase-settings";
+import { useNavigate } from "react-router-dom";
+import SCREENS from "../../../navigation/constants";
 
 const AddBeneficiaryForm: FC<{ closeModal: (...args: unknown[]) => void }> = ({
   closeModal,
 }) => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const currentUser = auth.currentUser;
+  const navigate = useNavigate();
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const {
-        fullName: { value: name },
-        accountNumber: { value: accountNumber },
-        bank: { value: bank },
-      } = formRef.current!;
-      const result = await AddBeneficiary({ name, accountNumber, bank });
-      if (result) {
-        alert("Beneficiary added successfully");
-        closeModal()
+    if (!currentUser) navigate(SCREENS.LOGIN);
+    else {
+      e.preventDefault();
+      setIsLoading(true);
+      try {
+        const {
+          fullName: { value: name },
+          accountNumber: { value: accountNumber },
+          bank: { value: bank },
+        } = formRef.current!;
+        const result = await AddBeneficiary({
+          name,
+          accountNumber,
+          bank,
+          user_id: currentUser.uid,
+        });
+        if (result) {
+          alert("Beneficiary added successfully");
+          closeModal();
+        }
+      } catch (error) {
+        alert("Error adding beneficiary");
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      alert("Error adding beneficiary")
-      console.log(error)
-    } finally{
-      setIsLoading(false)
     }
   };
   return (
@@ -58,7 +71,11 @@ const AddBeneficiaryForm: FC<{ closeModal: (...args: unknown[]) => void }> = ({
         />
       </label>
       <button className="btn mt-5 h-10 w-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90">
-        {isLoading ? (<i className="fas fa-spinner fa-spin" />) : "Add Beneficiary"}
+        {isLoading ? (
+          <i className="fas fa-spinner fa-spin" />
+        ) : (
+          "Add Beneficiary"
+        )}
       </button>
     </form>
   );

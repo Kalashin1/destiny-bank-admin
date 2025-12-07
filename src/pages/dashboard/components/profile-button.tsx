@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { getBalance, lockAccount, unLockAccount } from "../../helper";
+import { getBalance,  unLockAccount } from "../../helper";
 import LockSVG from "./svgs/lock";
 import UnlockSVG from "./svgs/unlock";
 
 const ProfileButton = () => {
   const lock = async () => {
-    await lockAccount();
+    // await lockAccount();
     alert("Account locked successfully!");
     location.reload()
   };
@@ -14,7 +14,7 @@ const ProfileButton = () => {
 
   useEffect(() => {
     const set_up = async () => {
-      const data = await getBalance()
+      const data = await getBalance("")
       if (data) {
         setIsLocked(data.isLocked)
       } else setIsLocked(false)
