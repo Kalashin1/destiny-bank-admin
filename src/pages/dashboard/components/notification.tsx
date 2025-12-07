@@ -1,8 +1,23 @@
-import type { FC } from "react";
+import { useEffect, useState, type FC } from "react";
+import type { INotifcation } from "../../../types";
+import { getUserNotification, markAllNotificationsAsRead, markNotificationAsRead } from "../../helper";
+import { auth } from "../../../firebase-settings";
 
 const NotificationDropdown: FC<{
   hideDropdown: (...args: unknown[]) => void;
 }> = ({ hideDropdown }) => {
+  const [notifications, setNotifications] = useState<INotifcation[]>([]);
+  const currentUser = auth.currentUser;
+  useEffect(() => {
+    const set_up = async () => {
+      if (currentUser) {
+        const _notifications = await getUserNotification(currentUser.uid);
+        setNotifications(_notifications);
+      }
+    };
+
+    set_up();
+  }, [currentUser]);
   return (
     <div className="absolute z-100 right-10 top-15">
       <div className="notification-tab-wrapper popper-box mx-4 mt-1 flex max-h-[calc(100vh-6rem)] w-[calc(100vw-2rem)] flex-col rounded-lg border border-slate-150 bg-white shadow-soft dark:border-navy-800 dark:bg-navy-700 dark:shadow-soft-dark sm:m-0 sm:w-80">
@@ -17,7 +32,14 @@ const NotificationDropdown: FC<{
               </div>
             </div>
 
-            <button onClick={hideDropdown}>
+            <button
+              onClick={async () => {
+                await markAllNotificationsAsRead(
+                  notifications.map((n) => n.id)
+                );
+                hideDropdown();
+              }}
+            >
               <i className="fas fa-circle-xmark" />
             </button>
           </div>
@@ -25,19 +47,21 @@ const NotificationDropdown: FC<{
 
         <div className="flex flex-col overflow-hidden">
           <div className="is-scrollbar-hidden space-y-4 overflow-y-auto px-4 py-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/10 dark:bg-secondary-light/15">
-                <i className="fa fa-user-edit text-secondary dark:text-secondary-light"></i>
-              </div>
-              <div>
-                <p className="font-medium text-slate-600 dark:text-navy-100">
-                  User Photo Changed
-                </p>
-                <div className="mt-1 line-clamp-1 text-xs text-slate-400 dark:text-navy-300">
-                  John Doe changed his avatar photo
+            {notifications && notifications.map((notification, index) => (
+              <div onClick={async () => await markNotificationAsRead(notification.id)} key={index} className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/10 dark:bg-secondary-light/15">
+                  <i className="fa fa-user-edit text-secondary dark:text-secondary-light"></i>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-600 dark:text-navy-100">
+                    {notification.type}
+                  </p>
+                  <div className="mt-1 line-clamp-1 text-xs text-slate-400 dark:text-navy-300">
+                    {notification.content}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

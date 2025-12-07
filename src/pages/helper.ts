@@ -16,7 +16,7 @@ import {
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "../firebase-settings";
-import type { Balance, Beneficiary, Transaction, User } from "../types";
+import type { Balance, Beneficiary, INotifcation, Transaction, User } from "../types";
 
 export const getUsers = async () => {
   const q = query(
@@ -71,11 +71,51 @@ export const updateBalance = async (
   });
 };
 
+export const createNotification = async (notification: Partial<INotifcation>) => {
+  await addDoc(collection(db, "notifications"), notification);
+}
+
+export const getUserNotification = async (user_id: string) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("user_id", "==",user_id),
+    where("isRead", "==", "false"),
+    orderBy("createdAt", "desc")
+  )
+  const docRefs = await getDocs(q);
+  const notifications: INotifcation[] = [];
+  docRefs.docs.map((doc) => {
+    if (doc.exists()) {
+      const notification = doc.data() as INotifcation;
+      notification.id = doc.id;
+      notifications.push(notification);
+    }
+  });
+  return notifications;
+}
+
+export const markNotificationAsRead = async (id: string) => {
+  await updateDoc(doc(db, "notifications", id), {
+    isRead: true
+  })
+}
+
+export const markAllNotificationsAsRead = async (ids: string[]) => {
+  return Promise.all(ids.map((id) => markNotificationAsRead(id)));
+}
+
 export const lockAccount = async (user_id: string) => {
   const docRef = doc(db, "balance", user_id);
   await updateDoc(docRef, {
     isLocked: true,
   });
+  await createNotification({
+    content: "Your account is under restriction",
+    createdAt: new Date().getTime(),
+    type: "Account restricted",
+    isRead: false,
+    user_id: user_id
+  })
 };
 
 export const getUserById = async (user_id: string) => {
@@ -100,10 +140,17 @@ export const updateUser = async (user_id: string, userParam: Partial<User>) => {
   await updateDoc(doc(db, "users", user_id), {
     ...userParam,
   });
+   await createNotification({
+     content: "Your Profile has been updated successfully",
+     createdAt: new Date().getTime(),
+     type: "Profile updated",
+     isRead: false,
+     user_id: user_id,
+   });
 };
 
-export const unLockAccount = async () => {
-  const docRef = doc(db, "balance", "qE6pFM6ppChqn6Gk3TqM");
+export const unLockAccount = async (user_id: string) => {
+  const docRef = doc(db, "balance", user_id);
   await updateDoc(docRef, {
     isLocked: false,
   });
@@ -181,11 +228,25 @@ export const AddTransaction = async ({
     beneficiary,
     user_id,
   });
+   await createNotification({
+     content: `Transaction to ${beneficiary?.accountNumber} in progress`,
+     createdAt: new Date().getTime(),
+     type: "Transaction created",
+     isRead: false,
+     user_id: user_id,
+   });
   return docRef.id;
 };
 
 export const AddBeneficiary = async (beneficiary: Beneficiary) => {
   const docRef = await addDoc(collection(db, "beneficiaries"), {...beneficiary});
+   await createNotification({
+     content: `Beneficiary ${beneficiary.name} added successfully`,
+     createdAt: new Date().getTime(),
+     isRead: false,
+     type: "Beneficiary added",
+     user_id: beneficiary.user_id,
+   });
   return docRef.id;
 };
 

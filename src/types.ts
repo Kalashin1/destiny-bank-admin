@@ -33,3 +33,13 @@ export type Beneficiary = {
   bank: string;
   user_id: string
 };
+
+export type INotifcation = {
+  id: string;
+  isRead: boolean;
+  content: string;
+  type: "Transaction created" | "Beneficiary added" | "Profile updated" | "Account restricted"
+  user_id: string;
+  createdAt: number;
+  updatedAt: number;
+}
