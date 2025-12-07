@@ -1,15 +1,17 @@
 import { useContext, useState } from "react";
 import NotificationButton from "./notification-button";
-// import ProfileButton from "./profile-button";
+import ProfileButton from "./profile-button";
 import { LayoutContext } from "../../layout-context";
-import NotificationDropdown from "./notification";
-// import { auth } from "../../../firebase-settings";
+// import NotificationDropdown from "./notification";
+import { auth } from "../../../firebase-settings";
+import LockAccountDropdown from "./lock-account-dropdown";
 
 const AppWrapper = () => {
   const {setShowSidePanel, showSidePanel} = useContext(LayoutContext)  
-  const [showNotification, updateShowNotification] = useState(false)
+  // const [showNotification, updateShowNotification] = useState(false)
+  const [showUsersDropdown, updateShowUsersDropdown] = useState(false);
 
-  // const currentUser = auth.currentUser;
+  const currentUser = auth.currentUser;
 
   const toggleSidePanel = () => {
     if (setShowSidePanel)
@@ -36,11 +38,24 @@ const AppWrapper = () => {
 
           {/* <!-- Right: Header buttons --> */}
           <div className="-mr-1.5 flex items-center space-x-2">
-            <NotificationButton showNotification={() => updateShowNotification(true)}  />
-            {/* {currentUser && currentUser.email?.includes('@admin') && <ProfileButton />} */}
+            <NotificationButton
+              showNotification={() => {}}
+            />
+            {currentUser && currentUser.email?.includes("@admin") && (
+              <ProfileButton showDropdown={() => updateShowUsersDropdown(true)} />
+            )}
           </div>
 
-          {showNotification && (<NotificationDropdown hideDropdown={() => updateShowNotification(false)} />)}
+          {/* {showNotification && (
+            <NotificationDropdown
+              hideDropdown={() => updateShowNotification(false)}
+            />
+          )} */}
+          {showUsersDropdown && (
+            <LockAccountDropdown
+              hideDropdown={() => updateShowUsersDropdown(false)}
+            />
+          )}
         </div>
       </div>
     </nav>
