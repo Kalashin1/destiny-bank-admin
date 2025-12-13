@@ -125,7 +125,7 @@ const ProfileCard = () => {
               </span>
             </label>
 
-            <label className="block">
+            <label className="block col-span-2 sm:col-span-1">
               <span>Email Address </span>
               <span className="relative mt-1.5 flex">
                 <input
@@ -141,7 +141,7 @@ const ProfileCard = () => {
                 </span>
               </span>
             </label>
-            <label className="block">
+            <label className="block col-span-2 sm:col-span-1">
               <span>Phone Number</span>
               <span className="relative mt-1.5 flex">
                 <input
@@ -156,7 +156,7 @@ const ProfileCard = () => {
                 </span>
               </span>
             </label>
-            <label className="block">
+            <label className="block col-span-2 sm:col-span-1">
               <span>Address</span>
               <span className="relative mt-1.5 flex">
                 <input
@@ -171,7 +171,7 @@ const ProfileCard = () => {
                 </span>
               </span>
             </label>
-            <label className="block">
+            <label className="block col-span-2 sm:col-span-1">
               <span>Province</span>
               <span className="relative mt-1.5 flex">
                 <input
