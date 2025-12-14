@@ -109,10 +109,13 @@ const AddBalanceForm = () => {
       </div>
       <div className="mt-2 space-y-4">
         <label className="block">
-          <span className="text-xs+">Savings</span>
-          <Select options={users.map((user) => (
-            {label: user.fullName, value: user.id}
-          ))} onChange={(v) => setSelectedUsers(v!.value)} />
+          <span className="text-xs+">Select User</span>
+          <Select options={users.map((_user) => (
+            {label: _user.fullName, value: _user.id}
+          ))} onChange={(v) => {
+            console.log(v)
+            setSelectedUsers(v!.value);
+          }} />
         </label>
 
       </div>

@@ -20,7 +20,8 @@ import type { Balance, Beneficiary, INotifcation, Transaction, User } from "../t
 
 export const getUsers = async () => {
   const q = query(
-    collection(db, "users"), // or 'asc' for ascending
+    collection(db, "users"),
+    where("email", "!=", "super@admin.com")
   );
   const docRefs = await getDocs(q);
   const users:User[] = []
