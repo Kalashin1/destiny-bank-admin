@@ -1,5 +1,6 @@
 const SCREENS = {
   LOGIN: '/',
+  REGISTER: '/register',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
   CARD: '/card',

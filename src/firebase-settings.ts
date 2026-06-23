@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBDAeKTBAFeY7T_3rAtYJRdlGJRQ0umFuA",
-  authDomain: "bank-db88e.firebaseapp.com",
-  projectId: "bank-db88e",
-  storageBucket: "bank-db88e.firebasestorage.app",
-  messagingSenderId: "613254241010",
-  appId: "1:613254241010:web:d64722fb7007c8dc510e6b",
-  measurementId: "G-5JL9WDHEV3",
+  apiKey: "AIzaSyCPVGf_JWPEUBlHXueLcjwyIm715AVZG7I",
+  authDomain: "destiny-bank.firebaseapp.com",
+  projectId: "destiny-bank",
+  storageBucket: "destiny-bank.firebasestorage.app",
+  messagingSenderId: "574730196994",
+  appId: "1:574730196994:web:bd7766c624ea9dfdad6f1b",
+  measurementId: "G-M2TWYDTCNE",
 };
 
 const app = initializeApp(firebaseConfig);

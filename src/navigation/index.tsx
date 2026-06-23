@@ -6,6 +6,7 @@ import Profile from "../pages/dashboard/profile";
 import Card from "../pages/dashboard/card";
 import FundPage from "../pages/dashboard/fund";
 import TransactionPage from "../pages/dashboard/transaction";
+import Register from "../pages/auth/register";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
   {
     path: SCREENS.LOGIN,
     element: <Login />
+  },
+  {
+    path: SCREENS.REGISTER,
+    element: <Register />
   },
   {
     path: SCREENS.DASHBOARD,
