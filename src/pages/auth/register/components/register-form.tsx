@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SCREENS from "../../../../navigation/constants";
 import { useRef, useState, type FormEvent } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../../firebase-settings";
 import { createBalance, createUser, getUserById } from "../../../helper";
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -18,7 +18,7 @@ const LoginForm = () => {
     setIsLoading(true);
     setHasError(false);
     const {
-      fullName: {value: name},
+      // fullName: {value: name},
       email: { value: email },
       password: { value: password },
     } = formRef.current!;
@@ -151,6 +151,10 @@ const LoginForm = () => {
       <button className="btn mt-5 w-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90">
         {isLoading ? <i className="fas fa-spinner fa-spin"></i> : "Sign In"}
       </button>
+
+      <div className="my-4 px-2">
+        <Link className="underline" to={SCREENS.LOGIN}>Already have an account? Login here!</Link>
+      </div>
     </form>
   );
 };
